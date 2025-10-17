@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HAPPY BIRTHDAY, BABYY!!</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Parisienne&display=swap" rel="stylesheet">
+
+    <style>
+        /* CSS STYLES */
+
+        :root {
+            --blush-pink: #fde2e8; /* Background */
+            --rose-gold: #b5838d; /* Buttons/Accents */
+            --cream-white: #fff8f5; /* Card background */
+            --dark-taupe: #4a4e69; /* Text */
+            --shadow-subtle: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* --- BLURRED BACKGROUND STYLES --- */
+        body {
+            position: relative; 
+            margin: 0;
+            font-family: 'Cormorant Garamond', serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: var(--blush-pink);
+            transition: background-color 0.5s ease;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; 
+            
+            /* Set the BLURRED IMAGE and the PINK OVERLAY here */
+            background-image: url('background-image.jpg'); /* <-- YOUR IMAGE PATH HERE */
+            background-size: cover; 
+            background-position: center center; 
+            background-attachment: fixed;
+            
+            /* 1. APPLY THE BLUR FILTER */
+            filter: blur(3px); 
+            
+            /* 2. APPLY THE PINK OVERLAY (Slightly opaque) */
+            opacity: 1;
+            background-color: rgba(253, 226, 232, 0.85);
+            background-blend-mode: overlay;
+        }
+
+        /* --- OVERLAY STYLES --- */
+
+        .stop-pause-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95); 
+            backdrop-filter: blur(5px); 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 100;
+            transition: opacity 1s ease, transform 1s ease; 
+        }
+
+        .icon-container {
+            cursor: pointer;
+            position: relative;
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            animation: pulse 2s infinite;
+        }
+
+        .icon-container::before {
+            content: 'Tap to Begin';
+            font-family: 'Great Vibes', cursive;
+            position: absolute;
+            font-size: 24px;
+            color: var(--rose-gold);
+            bottom: -50px;
+            transition: opacity 0.5s ease; 
+        }
+        
+        .icon-container.started::before {
+            content: '';
+            opacity: 0; 
+        }
+
+        .play-icon {
+            font-size: 100px;
+            color: var(--rose-gold);
+            border: 4px solid var(--rose-gold);
+            border-radius: 50%;
+            padding: 30px;
+            line-height: 0.9; 
+            transition: transform 0.3s;
+            display: inline-flex; 
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* --- MAIN CONTENT (PHOTOCARDS) STYLES --- */
+
+        .content-wrapper {
+            width: 100%;
+            max-width: 800px; 
+            margin: 20px;
+            padding: 20px;
+            box-sizing: border-box;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 1s ease, transform 1s ease;
+            z-index: 10;
+        }
+
+        .content-wrapper.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- MAIN TITLE STYLES --- */
+
+        h1.main-title {
+            font-family: 'Parisienne', cursive;
+            font-size: 65px;
+            margin-top: 10px; 
+            margin-bottom: 20px; 
+            text-align: center;
+            font-weight: 400;
+
+            color: #ffffff;
+            text-shadow: 
+                0 0 5px #ff5980,
+                0 0 10px #ff58ab,
+                0 0 15px #ff52d4,
+                0 0 20px #ff69b4;
+            
+            animation: zoomEffect 2s infinite; 
+        }
+
+        @keyframes zoomEffect {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+        
+        .photocard-display {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            background-color: var(--cream-white);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: var(--shadow-subtle);
+            padding: 25px;
+            border-radius: 10px;
+        }
+
+        .image-frame {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            overflow: hidden;
+            border-radius: 5px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .photocard-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            opacity: 0;
+        }
+        
+        .placeholder-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Dancing Script', cursive;
+            font-size: 24px;
+            color: var(--rose-gold);
+            text-align: center;
+            width: 80%;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+
+        .photocard-message-area {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .photocard-message {
+            font-family: 'Cormorant Garamond', serif;
+            /* 🔥 ADJUSTED: Increased font size for 21 pages of messages */
+            font-size: 22px; 
+            color: var(--dark-taupe);
+            line-height: 1.6;
+            min-height: 350px;
+            text-align: left;
+            border-left: 3px solid var(--blush-pink);
+            padding-left: 15px;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 35px;
+            gap: 20px;
+        }
+
+        .pagination button {
+            background-color: var(--rose-gold);
+            color: var(--cream-white);
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 50px;
+            font-size: 16px;
+            font-family: 'Cormorant Garamond', serif;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .pagination button:hover {
+            background-color: var(--dark-taupe);
+        }
+
+        .page-indicator {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--dark-taupe);
+        }
+
+        /* --- NOTEPAD / LETTER STYLES --- */
+
+        .notepad-view {
+            background-color: var(--cream-white); 
+            border: 2px solid var(--rose-gold);
+            box-shadow: var(--shadow-subtle);
+            padding: 40px;
+            border-radius: 15px;
+            text-align: left;
+            position: relative;
+            min-height: 700px;
+        }
+
+        .notepad-view h2 {
+            font-family: 'Parisienne', cursive;
+            font-size: 55px;
+            color: var(--rose-gold);
+            text-align: center;
+            margin-top: -10px; 
+            margin-bottom: 30px;
+            font-weight: 400;
+        }
+
+        .notepad-view p {
+            /* 🔥 ADJUSTED: New, more readable script font for 'curve' theme */
+            font-family: 'Dancing Script', cursive; 
+            /* 🔥 ADJUSTED: Increased font size for letter readability */
+            font-size: 22px; 
+            color: var(--dark-taupe);
+            line-height: 1.8;
+            margin: 15px 0;
+            /* ADDED: Subtle text-shadow for a 'curve' effect without losing readability */
+            text-shadow: 1px 1px 1px var(--blush-pink); 
+        }
+
+        .right-align {
+            text-align: right; 
+            margin-top: 40px;
+            font-weight: 700;
+            font-size: 24px;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-top: 30px;
+            background-color: var(--dark-taupe);
+            color: white;
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+        }
+
+        /* --- EMOJI/EFFECTS STYLES --- */
+
+        .emoji-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden; 
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .emoji {
+            position: absolute;
+            font-size: 30px; 
+            animation: fall linear forwards;
+            text-shadow: 0 0 5px #ffffff, 0 0 10px var(--rose-gold); 
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-50px) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) scale(0.5);
+                opacity: 0; 
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <audio id="backgroundMusic" src="ours.mp3" preload="auto" loop></audio>
+    <audio id="confettiSound" src="shimmer.mp3" preload="auto"></audio>
+
+    <div class="emoji-container" id="emojiContainer"></div>
+
+    <div id="stop-pause-overlay" class="stop-pause-overlay">
+        <div class="icon-container" id="icon">
+            <div class="play-icon">▶</div>
+        </div>
+    </div>
+
+    <div class="content-wrapper" id="main-content" style="display:none;">
+        <h1 class="main-title">Happy Birthday, My baby!!</h1>
+
+        <div class="photocard-display">
+            <div class="image-frame" id="image-frame">
+                <img src="" alt="Photocard Image" class="photocard-image" id="photocard-img">
+                <div class="placeholder-text" id="placeholder-text">Click the next page button to reveal the photo!</div>
+            </div>
+            
+            <div class="photocard-message-area">
+                <p class="photocard-message" id="photocard-msg">Your message will appear here once you navigate to the photo page.</p>
+            </div>
+        </div>
+
+        <div class="pagination">
+            <button class="prev-btn" id="prev-btn">&lt; Previous Page</button>
+            <span class="page-indicator" id="page-indicator">1/21</span>
+            <button class="next-btn" id="next-btn">Next Page &gt;</button>
+        </div>
+    </div>
+
+    <div class="content-wrapper" id="notepad-container" style="display:none;">
+    <div class="notepad-view">
+        <h2>A Letter to My Baby</h2>
+        <div class="notepad-content">
+            <p class="left-align">To my dearest Nadnad,</p>
+            <p>Hiii, my love!! Woww "my love"?? I get to call you that na, babyy grabeng transition toh. Last year "bossing" palang yung tawagan natin ah. Who would've thought na in your next birthday ay tayo na. Kakilig naman talaga oyy aksjdhshajshshs. </p>
+
+            <p>Anyway, i always tell you naman how much I'm thankful to God and universe na pinagtagpo tayo. Every day with you is a reminder of how lucky I am to have someone as wonderful as you in my life. Kahit masungit, matampuhin, palaaway, pikon, iyakin, maldita, pero opposite nyan ay isang loving, caring, sweet, gentle, supportive, comforting, and a clingy partner. Actually many more to mention pa nga eh pero yeah maraming reasons why i keep choosing you, my baby. I love youuu soo muchhh wabwab ko. </p>
+            
+            <p>You have such a beautiful heart, and I hope you never forget how much light you bring, not just to me, but to everyone lucky enough to know you. You're a ball of sunshine in everyone's life. But, I know deep down you're struggling, battling with yourself, having hard time to control your emotions. And I totally understand that baby, just know that i will always be here for you, listen to all your rants, kahit ano pa yan, baby. Mag sumbong kalang sakin palagi ha. </p>
+            
+            <p>I wish you all your heart desires and more. You are my sweetest blessing, my favorite person, and the one I’ll choose, palagi. Happy 21st birthday, my babyy!! I love youuuu, palagi. Mwaaaaaa😘🤍</p>
+            
+            <p class="right-align">Love, <br> your weyang</p>
+
+            <a href="#" class="back-btn" id="back-to-start">Back</a>
+        </div>
+    </div>
+</div>
+<script>
+    const imagesAndMessages = [
+        {src: 'image1.jpg', message: 'Wow kikay!! Gandaaaa, intro palang pasabog na😍. I like your outfit-tan here baby hehe ang cute lang. Marami pa toh pero eto yung bet ko kase parang ang bait-bait mo dito ba, oopsss🤭.'},
+        {src: 'image2.jpg', message: 'OMGG SHREKK??! oh no baby ko pala toh. Sooo prettyy gid wabwab ah kahit green😘.'},
+        {src: 'image3.jpg', message: 'My baby is readingg, here i am admiring my wabwab grabe very attractive naman talaga ohh.'},
+        {src: 'image4.jpg', message: 'Hellooo babyy, tingnan mo naman oy ga palambing toh ba. Kawawang bata talaga ohh, i love youuuu babylovee yiieeeee.😍😘'},
+        {src: 'image5.jpg', message: 'Sooo cuteee ng hairclip color pink also very nature yung background🥰.'},
+        {src: 'image6.jpg', message: 'Aba abaaa ga kiat sya sa school tita oh. Di alam ng mga cm nya na tinatawagan nya yung asawa nya ba.'},
+        {src: 'image7.jpg', message: 'My mostt fav actress and my London girl😍💗. Bet ko gid outfit mo here baby.'},
+        {src: 'image8.jpg', message: 'Oyy ano tohh, may nagtatampo yata👀🤭. Grabe kunware seryoso talaga sya sa ginagawa nya.'},
+        {src: 'image9.jpg', message: 'Woww kiss from babyyy💗. Ganyan pala perks pag maaga sa school kase may time pa mag kiss sa uyab.'},
+        {src: 'image10.jpg', message: 'Ohh ano to?? HAHAHAHA ang cuteee naman talaga oy. #blueblottingpaperwithpinkhairclips.'},
+        {src: 'image11.jpg', message: 'Ay inis sya dito sa kabilang table kase bakit daw may mas maingay pa sa kanya. Diba baby????'},
+        {src: 'image12.jpg', message: 'WHOAAAA GORGEOUS!!😍😘 Crush na crush talaga kita baby like parang iba talaga yung dating mo lalo na if you are wearing your hijab. I love youuuuu crushh!!'},
+        {src: 'image13.jpg', message: 'Fasting moment, tamang pic lang sa gilid kase di makakain. Dito rin nag start yung pag diet hanggang sa nag OMAD na.'},
+        {src: 'image14.jpg', message: 'Hii miss gumamela🌺. Idol talaga kita miss, pa autograph naman pag nagkita tayo. #fansince2010'},
+        {src: 'image15.jpg', message: 'Awww so cuteee, the moment before the meow bite pero kidding aside ang cute nyo dito baby ang gaan lang tingnan. Grabe naman si potchi oyy nandito pa rin sa photocard😍🤍'},
+        {src: 'image16.jpg', message: 'Ganyang tinginan ay delikado na HAHAHAHA clingy muna bago i-bite si mommy.'},
+        {src: 'image17.jpg', message: 'Another shre- ay i mean green face mask, wowowoww nakakainlove talaga ohh😍🌷'},
+        {src: 'image18.jpg', message: 'Sigma sigma girl HAHAHAHA angas naman ng baby ko nato talaga. Kahit sino di magtatangkang banggain ka.'},
+        {src: 'image19.jpg', message: 'Pa cute muna ako sa baby ko habang walang tao😍🤍. Crush ko nanaman to sya tita hehe.'},
+        {src: 'image20.jpg', message: 'Di halatang sarap na sarap ka sa ice cream babi noh?? HAHAHA so cuteee u look like a kid, feel na feel yung pag eat ng ice cream🥰.'},
+        {src: 'image21.jpg', message: 'Lastly, one of my favorite pics of youuu. Ganda ng kuha mo here baby very nature ulit, youu look so prettyyy😍💗🌷.'} 
+    ];
+
+    let currentPage = 1; 
+    const totalPhotoPages = 21; 
+    const totalSteps = 22; 
+    
+    // DOM Elements
+    const stopPauseOverlay = document.getElementById('stop-pause-overlay');
+    const icon = document.getElementById('icon');
+    const mainContent = document.getElementById('main-content');
+    const notepadContainer = document.getElementById('notepad-container');
+    const backgroundMusic = document.getElementById('backgroundMusic'); 
+    const confettiSound = document.getElementById('confettiSound'); 
+    // const newMusic = document.getElementById('newMusic'); // Removed because we don't need to control it anymore
+    const photocardImg = document.getElementById('photocard-img');
+    const photocardMsg = document.getElementById('photocard-msg');
+    const pageIndicator = document.getElementById('page-indicator');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const backToStartBtn = document.getElementById('back-to-start');
+    const placeholderText = document.getElementById('placeholder-text');
+    const photocardDisplay = document.querySelector('.photocard-display'); 
+    
+    let isStop = true; 
+
+    // Music Loop Setting
+    backgroundMusic.loop = true;
+    // newMusic.loop = true; // No longer needed
+
+    // --- INITIAL OVERLAY LOGIC ---
+    icon.addEventListener('click', () => {
+        if (isStop) {
+            // First click: Play music, change icon, hide "Tap to Begin"
+            icon.innerHTML = '<div class="play-icon">||</div>'; 
+            backgroundMusic.play().catch(error => console.log("Music auto-play failed, but will resume after overlay hide.")); 
+            confettiSound.play().catch(error => console.log("Confetti auto-play failed."));
+            isStop = false; 
+            icon.classList.add('started'); 
+        } else {
+            // Second click and beyond: Hide overlay, show content
+            stopPauseOverlay.style.opacity = '0';
+            stopPauseOverlay.style.transform = 'translateY(-100%)';
+
+            setTimeout(() => {
+                stopPauseOverlay.style.display = 'none'; 
+                mainContent.style.display = 'block'; 
+                mainContent.classList.add('active'); 
+            }, 1000); 
+        }
+    });
+
+    // --- CORE PAGE LOADING FUNCTION ---
+
+    function loadPage(page) {
+        
+        // Boundary Check for Letter (Page 22)
+        if (page > totalPhotoPages) {
+            currentPage = totalSteps; 
+            // Display the letter view
+            mainContent.style.display = 'none';
+            mainContent.classList.remove('active');
+            
+            notepadContainer.style.display = 'block';
+            setTimeout(() => {
+                notepadContainer.classList.add('active'); 
+            }, 100);
+
+            // 🔥 REMOVED MUSIC SWITCH LOGIC FOR YELLOW.MP3
+            // backgroundMusic.pause();
+            // backgroundMusic.currentTime = 0;
+            // newMusic.play();
+            
+            // Ensure background music keeps playing if it was already (which it should)
+            if (backgroundMusic.paused) {
+                 backgroundMusic.play().catch(error => console.log("Background music resume failed."));
+            }
+            
+            return;
+        }
+
+        // Normal Photocard View (Pages 1 to 21)
+        notepadContainer.style.display = 'none'; 
+        notepadContainer.classList.remove('active');
+        mainContent.style.display = 'block'; 
+        mainContent.classList.add('active');
+        
+        // Set content for the current page
+        const data = imagesAndMessages[page - 1];
+        
+        // Core Photo Update 
+        photocardImg.src = data.src;
+        placeholderText.textContent = "Click the next page button to reveal the photo!"; 
+        
+        // Update messages/indicators
+        photocardMsg.innerHTML = data.message;
+        pageIndicator.textContent = `${page}/${totalPhotoPages}`;
+        
+        // Ensure image is visible after content update
+        setTimeout(() => {
+            photocardImg.style.opacity = '1';
+            placeholderText.style.opacity = '0';
+        }, 50); 
+        
+        // Music Check: Ensure background music is playing for photocards
+        if (backgroundMusic.paused && !isStop) { // newMusic check removed
+            backgroundMusic.play();
+        }
+    }
+
+    // --- PAGE TRANSITION AND NAVIGATION LOGIC ---
+
+    function transitionAndLoad(newPage) {
+        // Check boundaries: up to 22 steps (21 photos + 1 letter)
+        if (newPage < 1 || newPage > totalSteps) return; 
+
+        // 1. Start the Fade-Out Transition
+        photocardDisplay.style.transition = 'opacity 0.2s ease-out';
+        photocardDisplay.style.opacity = '0';
+
+        // 2. Change content after fade-out (200ms)
+        setTimeout(() => {
+            currentPage = newPage;
+            
+            // Load the new content
+            loadPage(currentPage); 
+
+            // 3. Fade Back In (Only for the photocard display, not the notepad)
+            if (currentPage <= totalPhotoPages) {
+                photocardDisplay.style.transition = 'opacity 0.4s ease-in';
+                photocardDisplay.style.opacity = '1';
+            }
+        }, 200); 
+    }
+
+    // --- NAVIGATION BUTTON LISTENERS ---
+    nextBtn.addEventListener('click', () => {
+        if (currentPage < totalSteps) { 
+            transitionAndLoad(currentPage + 1);
+        }
+    });
+
+    prevBtn.addEventListener('click', () => {
+        if (currentPage > 1) {
+            // If on letter page (22), go back to photo 21
+            const targetPage = (currentPage === totalSteps) ? totalPhotoPages : currentPage - 1;
+            transitionAndLoad(targetPage);
+        }
+    });
+
+    // Back from letter to first photocard (Page 1)
+    backToStartBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        
+        // 🔥 REMOVED MUSIC SWITCH LOGIC FOR YELLOW.MP3
+        // newMusic.pause();
+        // newMusic.currentTime = 0;
+        // backgroundMusic.play();
+
+        transitionAndLoad(1);
+    });
+
+
+    // --- EMOJI EFFECTS LOGIC ---
+    function createFallingEmoji() {
+        const emojiContainer = document.getElementById('emojiContainer');
+        // Added 💖 to the emoji list for more variety!
+        const emojis = ['🎀', '🌷', '🌸', '💖']; 
+
+        const emoji = document.createElement('div');
+        emoji.classList.add('emoji');
+        emoji.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+
+        const xPos = Math.random() * window.innerWidth;
+        emoji.style.left = `${xPos}px`;
+
+        const fallDuration = Math.random() * 5 + 5; 
+        emoji.style.animationDuration = `${fallDuration}s`;
+
+        emojiContainer.appendChild(emoji);
+
+        emoji.addEventListener('animationend', () => {
+            emojiContainer.removeChild(emoji);
+        });
+    }
+
+    // Check if on the notepad page (step 22) to increase the emoji frequency for a celebratory effect
+    function startEmojiRain() {
+        // Now, the interval changes just based on whether you are viewing the letter.
+        const interval = (currentPage === totalSteps) ? 500 : 1000; 
+        
+        // Clear any existing interval to prevent overlap
+        if (window.emojiInterval) {
+            clearInterval(window.emojiInterval);
+        }
+        
+        window.emojiInterval = setInterval(createFallingEmoji, interval);
+    }
+
+    // Start emoji rain on load and restart it on page change if needed
+    document.addEventListener('DOMContentLoaded', () => {
+        loadPage(1);
+        startEmojiRain(); 
+    });
+
+    // Hook into page transitions to potentially change rain speed
+    const originalTransitionAndLoad = transitionAndLoad;
+    transitionAndLoad = (newPage) => {
+        originalTransitionAndLoad(newPage);
+        // Wait a moment after transition to check the new page state
+        setTimeout(startEmojiRain, 300); 
+    };
+</script>
